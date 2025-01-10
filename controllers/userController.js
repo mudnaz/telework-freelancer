@@ -51,7 +51,6 @@ export const store = async (req, res, next) => {
                 username: req.body.username,
                 email: req.body.email,
                 password: hashedPassword, // Assign the resolved hashed password
-                // profile_picture: req.body.profile_picture,
                  profile_picture: req.file ? req.file.path : null, // Save the file path
                 role: req.body.role,
                 bio: req.body.bio,
@@ -66,11 +65,11 @@ export const store = async (req, res, next) => {
         try {
             token = jwt.sign(
                 {
-                    userId: newUser.id,
-                    email: newUser.email
+                    userId: savedUser.id,
+                    email: savedUser.email
                 },
                 // "secretkeyappearshere",
-                "JWT_SECRET",
+                process.env.JWT_SECRET, // Secret key from .env
                 { expiresIn: "1h" }
             );
         } catch (err) {
@@ -98,7 +97,6 @@ export const store = async (req, res, next) => {
 export const update = async (req, res, next) => {
     try {
         const user_Id = req.body.user_id || req.params.id;
-
         if (!user_Id) {
             return res.status(400).json({
                 message: "User ID is required.",
